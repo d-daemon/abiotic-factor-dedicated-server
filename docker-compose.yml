@@ -1,0 +1,28 @@
+services:
+  abiotic-server:
+    image: ${IMAGE_REPOSITORY:-hhxcusco/abiotic-server}:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: abiotic-factor-server
+    restart: unless-stopped
+    ports:
+      - "${GAME_PORT:-7777}:${GAME_PORT:-7777}/udp"
+      - "${QUERY_PORT:-27015}:${QUERY_PORT:-27015}/udp"
+    environment:
+      - SERVER_NAME=${SERVER_NAME:-Abiotic Factor Facility}
+      - SERVER_PASSWORD=${SERVER_PASSWORD:-}
+      - WORLD_SAVE_NAME=${WORLD_SAVE_NAME:-Cascade}
+      - MAX_PLAYERS=${MAX_PLAYERS:-6}
+      - GAME_PORT=${GAME_PORT:-7777}
+      - QUERY_PORT=${QUERY_PORT:-27015}
+      - ADDITIONAL_ARGS=${ADDITIONAL_ARGS:--useperfthreads -NoAsyncLoadingThread}
+      - APP_ID=${APP_ID:-2857200}
+    volumes:
+      - ./game_data:/game
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "AbioticFactorServer-Win64-Shipping.exe"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 2m
