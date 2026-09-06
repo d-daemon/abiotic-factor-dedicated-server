@@ -38,12 +38,18 @@ Compose reads `.env` automatically. The most useful settings are:
 | `IMAGE_REPOSITORY` | `hhxcusco/abiotic-server` | Docker image repository |
 | `GAME_PORT` | `7777` | Game UDP port |
 | `QUERY_PORT` | `27015` | Steam query UDP port |
+| `DISCORD_WEBHOOK_URL` | empty | Optional Discord webhook for a startup server-info notification |
 
 Do not commit `.env` if it contains a password. After changing `.env`, recreate the container:
 
 ```sh
 docker compose up -d --force-recreate
 ```
+
+When `DISCORD_WEBHOOK_URL` is configured, the server posts its join code, world,
+player limit, password status, and ports to Discord after the server logs its
+automatically generated join code. Webhook failures do not prevent the game
+server from starting.
 
 ## Ports and data
 
