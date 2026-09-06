@@ -1,9 +1,6 @@
 services:
   abiotic-server:
-    image: ${IMAGE_REPOSITORY:-hhxcusco/abiotic-server}:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: hhxcusco/abiotic-server:latest
     container_name: abiotic-factor-server
     restart: unless-stopped
     ports:

@@ -1,29 +1,61 @@
 # Abiotic Factor Dedicated Server
 
-Run an *Abiotic Factor* dedicated server in Docker. The container uses SteamCMD to download and update the Windows server, then runs it headlessly through Wine.
+[![Build and publish server image](https://github.com/d-daemon/abiotic-factor-dedicated-server/actions/workflows/docker-build.yml/badge.svg)](https://github.com/d-daemon/abiotic-factor-dedicated-server/actions/workflows/docker-build.yml)
+[![Docker pulls](https://img.shields.io/docker/pulls/hhxcusco/abiotic-server?logo=docker)](https://hub.docker.com/r/hhxcusco/abiotic-server)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+Run an **Abiotic Factor** dedicated server using Docker.
+
+## Prerequisites
+
+- `64-bit Linux host` or `Windows host with Windows Subsystem for Linux (WSL)`
+- `Docker` or `Synology Container Manager`
+- At least `8 GB` of free disk space
+- UDP access to ports `7777` and `27015`
 
 ## Quick start
 
-You need a 64-bit Linux host or NAS with Docker Engine and the Compose plugin. Allow at least 8 GB of free disk space and UDP access to ports `7777` and `27015`.
+If you are using Synology Container Manager, jump straight to [Synology](#synology).
 
-From the project directory:
+Create a folder for the server and add these three items to it:
 
-```sh
-cp .env.example .env
+- `.env`
+- `compose.yml`
+- `game_data/`
+
+The folder should look like this:
+
+```text
+abiotic-factor/
+├── .env
+├── compose.yml
+└── game_data/
 ```
 
-Edit `.env` if needed, especially `SERVER_NAME` and `SERVER_PASSWORD`, then start the server:
+Copy the contents of `.env.example` into `.env`, then edit `SERVER_NAME` and `SERVER_PASSWORD` as needed. The `game_data` folder can be empty; it stores the downloaded game files, saves, configuration, and logs.
+
+The published image workflow uses `hhxcusco/abiotic-server:latest`, so you do not need to clone the repository or download the Dockerfile and startup script.
 
 ```sh
-docker compose up -d --build
+docker compose up -d
 docker compose logs -f abiotic-server
 ```
 
-The first start downloads the server and may take several minutes. It is ready when the logs show the game process launching. The container restarts automatically unless you stop it.
+The first start downloads the Docker image and game server files and may take several minutes. It is ready when the logs show the game process launching. The container restarts automatically unless you stop it.
 
 ### Synology
 
-Copy this repository to a shared folder, open **Container Manager > Project > Create**, select that folder, and build/start the project. Allow UDP ports `7777` and `27015` through the NAS firewall and router.
+For Synology Container Manager, set up the published image workflow as follows:
+
+1. Create a shared-folder subfolder named `abiotic-factor`.
+2. Create a `game_data` folder inside `abiotic-factor`. This folder stores the downloaded game files, saves, configuration, and logs.
+3. Create an `.env` file inside `abiotic-factor` by copying the contents of `.env.example` into it. Update the server settings, especially `SERVER_NAME` and `SERVER_PASSWORD`. You can also add a Discord webhook URL in `DISCORD_WEBHOOK_URL` so the server broadcasts its latest join code.
+4. Add the published-image `compose.yml` inside `abiotic-factor`.
+5. In **Container Manager > Project > Create**, create a project named `abiotic-factor` and select the `abiotic-factor` folder as the project path.
+6. Open UDP ports `7777` and `27015` in the Synology firewall and forward both UDP ports from your router to the Synology NAS.
+7. Start the project. Container Manager downloads the published Docker image and the game server files; the first start may take several minutes.
+
+The project folder should contain `compose.yml`, `.env`, and the `game_data` directory at the same level.
 
 ## Configuration
 
@@ -32,15 +64,14 @@ Compose reads `.env` automatically. The most useful settings are:
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `SERVER_NAME` | `Abiotic Factor Facility` | Server browser name |
-| `SERVER_PASSWORD` | empty | Join password; empty means public |
+| `SERVER_PASSWORD` | | Join password; empty means public |
 | `WORLD_SAVE_NAME` | `Cascade` | World save name |
 | `MAX_PLAYERS` | `6` | Player limit |
-| `IMAGE_REPOSITORY` | `hhxcusco/abiotic-server` | Docker image repository |
 | `GAME_PORT` | `7777` | Game UDP port |
 | `QUERY_PORT` | `27015` | Steam query UDP port |
-| `DISCORD_WEBHOOK_URL` | empty | Optional Discord webhook for a startup server-info notification |
+| `DISCORD_WEBHOOK_URL` | | Optional Discord webhook for a startup server-info notification |
 
-Do not commit `.env` if it contains a password. After changing `.env`, recreate the container:
+After changing `.env`, recreate the container:
 
 ```sh
 docker compose up -d --force-recreate
@@ -71,18 +102,6 @@ docker compose down                       # Remove container and network
 ```
 
 SteamCMD validates the server files every time the container starts, so restarting also checks for game updates. If startup fails, inspect the logs with `docker compose logs --tail=200 abiotic-server`; common causes are insufficient disk space, a failed download, or blocked UDP ports.
-
-## Published image
-
-The default `compose.yml` builds locally. To use the published image instead:
-
-```sh
-cp compose.yml.example compose.yml
-cp .env.example .env
-docker compose up -d
-```
-
-Review the image name before using this option with a fork.
 
 ## License and game files
 
