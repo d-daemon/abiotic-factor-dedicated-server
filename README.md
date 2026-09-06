@@ -68,10 +68,10 @@ SteamCMD validates the server files every time the container starts, so restarti
 
 ## Published image
 
-The default `docker-compose.yml` builds locally. To use the published image instead:
+The default `compose.yml` builds locally. To use the published image instead:
 
 ```sh
-cp docker-compose.yml.example docker-compose.yml
+cp compose.yml.example compose.yml
 cp .env.example .env
 docker compose up -d
 ```
