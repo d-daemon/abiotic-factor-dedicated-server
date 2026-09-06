@@ -24,7 +24,7 @@ echo "[1/2] Checking for game server updates via SteamCMD..."
   +force_install_dir /game \
   +login anonymous \
   +@sSteamCmdForcePlatformType windows \
-  +app_update ${APP_ID} validate \
+  +app_update "${APP_ID}" validate \
   +quit
 
 echo "[2/2] Launching Abiotic Factor Dedicated Server..."
@@ -62,6 +62,9 @@ fi
 
 echo "Launching game server using: $WINE_CMD"
 
+# Preserve the configured space-separated flags as separate arguments.
+read -r -a ADDITIONAL_ARGS_ARRAY <<< "$ADDITIONAL_ARGS"
+
 # Hand off execution to Wine
-exec $WINE_CMD "$EXE_PATH" "${ARGS[@]}" ${ADDITIONAL_ARGS}
+exec "$WINE_CMD" "$EXE_PATH" "${ARGS[@]}" "${ADDITIONAL_ARGS_ARRAY[@]}"
 
