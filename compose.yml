@@ -18,6 +18,7 @@ services:
       - QUERY_PORT=${QUERY_PORT:-27015}
       - ADDITIONAL_ARGS=${ADDITIONAL_ARGS:--useperfthreads -NoAsyncLoadingThread}
       - APP_ID=${APP_ID:-2857200}
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL:-}
     volumes:
       - ./game_data:/game
     healthcheck:
