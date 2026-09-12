@@ -61,8 +61,7 @@ send_discord_notification() {
     printf '%s' "$value"
   }
 
-  local server_name join_code world_save password_status status_value payload
-  server_name=$(json_escape "$SERVER_NAME")
+  local join_code world_save password_status status_value payload
   join_code=$(json_escape "${join_code_value:-Not available}")
   world_save=$(json_escape "$WORLD_SAVE_NAME")
   password_status="$( [ -n "$SERVER_PASSWORD" ] && printf 'Required' || printf 'None' )"
