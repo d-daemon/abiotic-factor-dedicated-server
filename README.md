@@ -17,7 +17,7 @@ Run an **Abiotic Factor** dedicated server using Docker.
 
 If you are using Synology Container Manager, jump straight to [Synology](#synology).
 
-Create a folder for the server and add these three items to it:
+Create a folder for the server and add these items to it:
 
 - `.env`
 - `compose.yml`
@@ -32,7 +32,7 @@ abiotic-factor/
 └── game_data/
 ```
 
-Copy the contents of `.env.example` into `.env`, then edit `SERVER_NAME` and `SERVER_PASSWORD` as needed. The `game_data` folder can be empty; it stores the downloaded game files, saves, configuration, and logs.
+Copy the repository's `compose.yml` into your server folder, then create `.env` and edit `SERVER_NAME` and `SERVER_PASSWORD` as needed. The `game_data` folder can be empty; it stores the downloaded game files, saves, configuration, and logs.
 
 The published image workflow uses `hhxcusco/abiotic-server:latest`, so you do not need to clone the repository or download the Dockerfile and startup script.
 
@@ -49,8 +49,8 @@ For Synology Container Manager, set up the published image workflow as follows:
 
 1. Create a shared-folder subfolder named `abiotic-factor`.
 2. Create a `game_data` folder inside `abiotic-factor`. This folder stores the downloaded game files, saves, configuration, and logs.
-3. Create an `.env` file inside `abiotic-factor` by copying the contents of `.env.example` into it. Update the server settings, especially `SERVER_NAME` and `SERVER_PASSWORD`. You can also add a Discord webhook URL in `DISCORD_WEBHOOK_URL` so the server broadcasts its latest join code.
-4. Add the published-image `compose.yml` inside `abiotic-factor`.
+3. Create an `.env` file inside `abiotic-factor` and set your server settings, especially `SERVER_NAME` and `SERVER_PASSWORD`. You can also add a Discord webhook URL in `DISCORD_WEBHOOK_URL` so the server broadcasts its latest join code.
+4. Add the repository's `compose.yml` inside `abiotic-factor`.
 5. In **Container Manager > Project > Create**, create a project named `abiotic-factor` and select the `abiotic-factor` folder as the project path.
 6. Open UDP ports `7777` and `27015` in the Synology firewall and forward both UDP ports from your router to the Synology NAS.
 7. Start the project. Container Manager downloads the published Docker image and the game server files; the first start may take several minutes.
@@ -79,8 +79,10 @@ docker compose up -d --force-recreate
 
 When `DISCORD_WEBHOOK_URL` is configured, the server posts its join code, world,
 player limit, password status, and ports to Discord after the server logs its
-automatically generated join code. Webhook failures do not prevent the game
-server from starting.
+automatically generated join code. It also logs a shutdown/restart status line
+and sends that lifecycle event to Discord when the game process exits or the
+container is stopped. Webhook failures do not prevent the game server from
+starting.
 
 ## Ports and data
 
