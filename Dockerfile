@@ -5,6 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Enable 32-bit architecture and install Wine + dependencies
 RUN dpkg --add-architecture i386 && \
     apt-get update && \
+    apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
