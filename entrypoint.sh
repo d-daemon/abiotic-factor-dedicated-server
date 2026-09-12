@@ -49,7 +49,7 @@ fi
 
 send_discord_notification() {
   local title=${1:-"$SERVER_NAME"}
-  local status=${2:-"Server status update"}
+  local status=${2:-"Offline"}
   local join_code_value=${3:-""}
 
   json_escape() {
@@ -61,13 +61,26 @@ send_discord_notification() {
     printf '%s' "$value"
   }
 
-  local server_name join_code world_save password_status payload
+  local server_name join_code world_save password_status status_value payload
   server_name=$(json_escape "$SERVER_NAME")
   join_code=$(json_escape "${join_code_value:-Not available}")
   world_save=$(json_escape "$WORLD_SAVE_NAME")
   password_status="$( [ -n "$SERVER_PASSWORD" ] && printf 'Required' || printf 'None' )"
-  payload=$(printf '{"username":"Abiotic Factor Server","embeds":[{"title":"%s","color":5814783,"fields":[{"name":"Status","value":"%s","inline":false},{"name":"Join code","value":"%s","inline":true},{"name":"World","value":"%s","inline":true},{"name":"Players","value":"%s","inline":true},{"name":"Password","value":"%s","inline":true},{"name":"Ports","value":"Game: %s\\nQuery: %s","inline":false}]}]}' \
-    "$title" "$(json_escape "$status")" "$join_code" "$world_save" "$MAX_PLAYERS" "$password_status" "$GAME_PORT" "$QUERY_PORT")
+
+  case "$status" in
+    "Online")
+      status_value="🟢 Online"
+      ;;
+    "Offline")
+      status_value="🔴 Offline"
+      ;;
+    *)
+      status_value="⚪ ${status}"
+      ;;
+  esac
+
+  payload=$(printf '{"username":"Abiotic Factor Server","embeds":[{"title":"%s","color":5814783,"fields":[{"name":"Join code","value":"%s","inline":true},{"name":"Status","value":"%s","inline":true},{"name":"World","value":"%s","inline":false},{"name":"Players","value":"%s","inline":false},{"name":"Password","value":"%s","inline":false},{"name":"Ports","value":"Game: %s\\nQuery: %s","inline":false}]}]}' \
+    "$title" "$(json_escape "$status_value")" "$join_code" "$world_save" "$MAX_PLAYERS" "$password_status" "$GAME_PORT" "$QUERY_PORT")
 
   if ! curl --fail --silent --show-error --max-time 10 \
     -H "Content-Type: application/json" \
@@ -82,10 +95,10 @@ cleanup_on_exit() {
 
   if [ "${SERVER_STARTED:-0}" -eq 1 ] && [ "${DISCORD_SHUTDOWN_SENT:-0}" -eq 0 ]; then
     DISCORD_SHUTDOWN_SENT=1
-    log_server_event "status" "Server is stopping or restarting (exit code: ${exit_code})."
+    log_server_event "status" "Server is shutting down (exit code: ${exit_code})."
 
     if [ -n "$DISCORD_WEBHOOK_URL" ]; then
-      send_discord_notification "$SERVER_NAME" "Restarting" "$JOIN_CODE_CAPTURED"
+      send_discord_notification "$SERVER_NAME" "Offline" "$JOIN_CODE_CAPTURED"
     fi
   fi
 }
