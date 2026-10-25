@@ -1,11 +1,11 @@
-FROM debian:bookworm-slim
+# Digest pinned to ensure consistent base image version - sha256:7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8
+FROM debian:bookworm-slim@sha256:7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Enable 32-bit architecture and install Wine + dependencies
 RUN dpkg --add-architecture i386 && \
     apt-get update && \
-    apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
