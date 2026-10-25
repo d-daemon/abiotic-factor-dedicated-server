@@ -7,7 +7,7 @@ services:
       - "${GAME_PORT:-7777}:${GAME_PORT:-7777}/udp"
       - "${QUERY_PORT:-27015}:${QUERY_PORT:-27015}/udp"
     environment:
-      - SERVER_NAME=${SERVER_NAME:-Abiotic Factor Facility}
+      - SERVER_NAME=${ABIOTIC_SERVER_NAME:-Abiotic Factor Facility}
       - SERVER_PASSWORD=${SERVER_PASSWORD:-}
       - WORLD_SAVE_NAME=${WORLD_SAVE_NAME:-Cascade}
       - MAX_PLAYERS=${MAX_PLAYERS:-6}
